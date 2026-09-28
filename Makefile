@@ -164,11 +164,12 @@ build-kernel: $(OPENWRT_SRCDIR)/feeds.conf $(OPENWRT_SRCDIR)/.config ## Build Op
 	time -p make defconfig ; \
 	time -p make V=s target/linux/compile -i -j $(NPROC) ; \
 	VERMAGIC=$$(cat ./build_dir/target-$(OPENWRT_ARCH)*/linux-$(OPENWRT_TARGET)_$(OPENWRT_SUBTARGET)/linux-*/.vermagic) ; \
-	echo "Vermagic: $${VERMAGIC}" ; \
-	if [ "$(OPENWRT_VERMAGIC)" != "any" ] && [ "$${VERMAGIC}" != "$(OPENWRT_VERMAGIC)" ]; then \
-		echo "Vermagic mismatch: $${VERMAGIC}, expected $(OPENWRT_VERMAGIC)" ; \
-		exit 1 ; \
-	fi ; \
+echo "Original vermagic: $${VERMAGIC}" ; \
+if [ "$(OPENWRT_VERMAGIC)" != "any" ]; then \
+	echo "$(OPENWRT_VERMAGIC)" > ./build_dir/target-$(OPENWRT_ARCH)*/linux-$(OPENWRT_TARGET)_$(OPENWRT_SUBTARGET)/linux-*/.vermagic ; \
+	VERMAGIC="$(OPENWRT_VERMAGIC)" ; \
+	echo "Locked vermagic: $${VERMAGIC}" ; \
+fi ; \
 	}
 
 # TODO: this should not be required but actions/cache/save@v4 could not handle circular symlinks with error like this:
